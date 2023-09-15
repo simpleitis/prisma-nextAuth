@@ -1,0 +1,29 @@
+Guide - https://ethanmick.com/how-to-set-up-prisma-with-next-js-postgres/
+
+
+npm install prisma --save-dev
+
+npm i @prisma/client
+
+npx prisma init
+
+After making changes to the schema we need to execute 
+"npx prisma migrate dev --name init", this is called a migration and it can be used to tell prisma to add new changes to the db or to roll back to a previous migration
+
+After we run a migration we have the prisma client generated for us with the type definitions and this data is stored inside the node_modules and when we are going to deploy an application we run npm install first to install new node modules, and then run the build command so it is a good idea to add "prisma generate" befor the build command, so the node_modules would have the data required for the prisma client before the build process occurs
+
+
+To seed the database we have to install "npm i ts-node" as a dev dep and add a new script in the same level as the "dependencies" in the package.json for the seeding to work with next js
+"prisma": {
+  "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+},
+
+What we are saying here is, execute ts node and set the compile options to set module type used as common js and execute a seed.ts file
+
+Now create the seed.ts file inside the prisma folder. The seed.ts will be run by prisma after it runs migrations, updates or resets the database. So this would help us to set default information everytime without having to manually set those values in the db.
+
+You can run "npx prisma generate" to generate a new prisma client
+
+You can run "npx prisma db seed" to run the seed.ts file
+
+

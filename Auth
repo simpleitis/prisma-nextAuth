@@ -1,0 +1,22 @@
+GUIDE - https://www.youtube.com/watch?v=2kgqPvs0j_I
+
+npm install next-auth
+
+Create /api/auth/[...nextauth]/route.ts inside the app directory
+
+Create ".env.local" file and set "NEXTAUTH_SECRET", this should be there for the jwt to work
+
+To get the session details on server rendered components and api routes we can use 
+const session = await getServerSession(authOptions);
+
+To get session details on client side we first need to wrap the application in the "SessionProvider" and then we can use "const { data: session } = useSession();". Here the client side would take the token and send it back to the server and the server would then decode the token and send back the data. 
+In the case of "getServerSession" when we make a request to a page or api route to the server, next also sends along the cookies, and the server has direct access and it can decode the session data and send it along with the page or api data we requested.
+
+When we get the default information from a token, it might not have much information. It would contain some fields that next-auth chooses, like email and name only. If we want to pass additional information, we need to first return the addition information from the "authorize" function, then define the jwt and session functions and return the required data from these functions also. The jwt function is responsible for jwt creation and session function is responsible for returning session data. The jwt function gets the "user" data first time user logs in only. When we return the required data from inside jwt function, the data becomes available inside the token variable for the session function and from there we can add that data to the return value of the session function, which is the data we get when we fetch session data using the "getServerSession" or "useSession".
+
+To add protected routes you have 3 options
+1) Check client side - When using this method there is latency because we have to wait for the session data to load because the request has to send session data to server and wait for the response. We use the "useSession" hook for checking here.
+2) Check server side - When using this method we can check the session data and it is much more faster compared to client side protection and much more safer I think. We use the "getServerSession" for checking here
+3) User middleware - We need to create a "middleware.ts" file in the root directory, not in the app directory. Just by adding "export {default} from 'next-auth/middleware'" we protect our entire application. Under this export you can add the export for the "config" object to apply protection to selected routes only
+
+
